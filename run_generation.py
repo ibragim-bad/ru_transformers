@@ -26,6 +26,7 @@ import torch
 import torch.nn.functional as F
 import numpy as np
 
+from yt_encoder import YTEncoder
 from transformers import (GPT2Config, OpenAIGPTConfig, XLNetConfig, TransfoXLConfig, 
                                     GPT2LMHeadModel, GPT2Tokenizer, 
                                     OpenAIGPTLMHeadModel, OpenAIGPTTokenizer, 
@@ -43,7 +44,7 @@ MAX_LENGTH = int(10000)  # Hardcoded max length to avoid infinite loop
 ALL_MODELS = sum((tuple(conf.pretrained_config_archive_map.keys()) for conf in (GPT2Config, OpenAIGPTConfig, XLNetConfig, TransfoXLConfig)), ())
 
 MODEL_CLASSES = {
-    'gpt2': (GPT2LMHeadModel, GPT2Tokenizer),
+    'gpt2': (GPT2LMHeadModel, YTEncoder),
     'openai-gpt': (OpenAIGPTLMHeadModel, OpenAIGPTTokenizer),
     'xlnet': (XLNetLMHeadModel, XLNetTokenizer),
     'transfo-xl': (TransfoXLLMHeadModel, TransfoXLTokenizer),
@@ -193,7 +194,7 @@ def main():
             is_xlnet=bool(args.model_type == "xlnet"),
         )
         out = out[0, len(context_tokens):].tolist()
-        text = tokenizer.decode(out, clean_up_tokenization_spaces=True)
+        text = tokenizer.decode(out)
         print(text)
         if args.prompt:
             break
